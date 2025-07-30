@@ -78,8 +78,10 @@ TaskManagementApp/
 ### 🔧 Setup
 
 1. Clone or extract the project to your system
-	[git clone git@github.com:logeshkumardgithub/task_management_csApp.git]
-2. Open the project in **Visual Studio Code** using [TaskManagementApp.sln] file
+	```
+	git clone git@github.com:logeshkumardgithub/task_management_csApp.git
+	```
+2. Open the project in **Visual Studio Code** using ```TaskManagementApp.sln``` file from repo
 3. Open terminal and navigate to root directory
 
 ---
@@ -102,7 +104,6 @@ dotnet run
 
 - Swagger will be available at:
   http://localhost:5000/swagger
-- You’ll be prompted for basic auth credentials
 
 ---
 
