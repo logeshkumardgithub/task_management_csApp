@@ -70,6 +70,10 @@ TaskManagementApp/
 ### 📦 Prerequisites
 
 - Install [.NET 8 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- Install swagger NuGet package
+  ```
+  dotnet add package Swashbuckle.AspNetCore
+  ```
 - Visual Studio Code or any C# IDE
 - Command Line / Terminal
 
