@@ -1,0 +1,35 @@
+
+@page "{id:int}"
+@model TaskManagement.UI.Pages.Tasks.EditModel
+@{
+    ViewData["Title"] = "Edit Task";
+}
+<h2>Edit Task</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="Task.Id" />
+    <div class="mb-3">
+        <label asp-for="Task.Title" class="form-label"></label>
+        <input asp-for="Task.Title" class="form-control" />
+        <span asp-validation-for="Task.Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Task.Description" class="form-label"></label>
+        <input asp-for="Task.Description" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Task.DueDate" class="form-label"></label>
+        <input asp-for="Task.DueDate" class="form-control" type="date" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Task.IsCompleted" class="form-check-label">
+            <input asp-for="Task.IsCompleted" class="form-check-input" /> Completed
+        </label>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-page="/Tasks/Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,29 @@
+
+@page
+@model TaskManagement.UI.Pages.Tasks.CreateModel
+@{
+    ViewData["Title"] = "Create Task";
+}
+<h2>Create New Task</h2>
+
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="Task.Title" class="form-label"></label>
+        <input asp-for="Task.Title" class="form-control" />
+        <span asp-validation-for="Task.Title" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Task.Description" class="form-label"></label>
+        <input asp-for="Task.Description" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Task.DueDate" class="form-label"></label>
+        <input asp-for="Task.DueDate" class="form-control" type="date" />
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-page="/Tasks/Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

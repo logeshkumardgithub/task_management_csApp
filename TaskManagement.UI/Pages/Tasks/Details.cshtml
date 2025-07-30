@@ -1,0 +1,16 @@
+
+@page "{id:int}"
+@model TaskManagement.UI.Pages.Tasks.DetailsModel
+@{
+    ViewData["Title"] = "Task Details";
+}
+<h2>Task Details</h2>
+
+<div class="mb-3"><strong>Title:</strong> @Model.Task.Title</div>
+<div class="mb-3"><strong>Description:</strong> @Model.Task.Description</div>
+<div class="mb-3"><strong>Status:</strong> @(Model.Task.IsCompleted ? "Completed" : "Pending")</div>
+<div class="mb-3"><strong>Created:</strong> @Model.Task.CreatedDate.ToString("f")</div>
+<div class="mb-3"><strong>Due Date:</strong> @Model.Task.DueDate?.ToString("yyyy-MM-dd")</div>
+
+<a asp-page="/Tasks/Edit" asp-route-id="@Model.Task.Id" class="btn btn-warning">Edit</a>
+<a asp-page="/Tasks/Index" class="btn btn-secondary">Back</a>

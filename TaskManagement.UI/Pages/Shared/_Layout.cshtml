@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Task Manager</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="~/css/bootstrap.css" rel="stylesheet" />
+
+    <link rel="stylesheet" href="~/css/site.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" asp-page="/Tasks/Index">Task Manager</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mt-4">
+        @RenderBody()
+    </main>
+
+    <footer class="border-top footer text-muted mt-4">
+        <div class="container">&copy; @DateTime.Now.Year - Task Manager</div>
+    </footer>
+
+    <!-- JS Scripts -->
+    <script src="~/js/jquery.js"></script>
+    <script src="~/js/bootstrap.bundle.js"></script>
+    <script src="~/js/jquery.validate.js"></script>
+
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
