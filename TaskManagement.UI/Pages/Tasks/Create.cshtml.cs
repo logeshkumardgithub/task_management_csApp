@@ -10,7 +10,7 @@ namespace TaskManagement.UI.Pages.Tasks
     {
         private readonly HttpClient _httpClient;
         [BindProperty]
-        public TaskItem Task { get; set; }
+        public TaskItem? Task { get; set; }
 
         public CreateModel(IHttpClientFactory clientFactory)
         {
@@ -24,7 +24,10 @@ namespace TaskManagement.UI.Pages.Tasks
             if (!ModelState.IsValid)
                 return Page();
             
-            Task.CreatedDate = DateTime.Now; // auto timestamp
+            if (Task != null)
+            {
+                Task.CreatedDate = DateTime.Now;
+            }
             var response = await _httpClient.PostAsJsonAsync("tasks", Task);
             if (response.IsSuccessStatusCode)
                 return RedirectToPage("Index");

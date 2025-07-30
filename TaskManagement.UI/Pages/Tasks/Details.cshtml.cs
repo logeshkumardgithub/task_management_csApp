@@ -9,7 +9,7 @@ namespace TaskManagement.UI.Pages.Tasks
     public class DetailsModel : PageModel
     {
         private readonly HttpClient _httpClient;
-        public TaskItem Task { get; set; }
+        public TaskItem? Task { get; set; }
 
         public DetailsModel(IHttpClientFactory clientFactory)
         {

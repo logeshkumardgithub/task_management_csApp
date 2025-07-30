@@ -10,7 +10,7 @@ namespace TaskManagement.UI.Pages.Tasks
     {
         private readonly HttpClient _httpClient;
         [BindProperty]
-        public TaskItem Task { get; set; }
+        public TaskItem? Task { get; set; }
 
         public EditModel(IHttpClientFactory clientFactory)
         {
@@ -28,7 +28,7 @@ namespace TaskManagement.UI.Pages.Tasks
             if (!ModelState.IsValid)
                 return Page();
 
-            var response = await _httpClient.PutAsJsonAsync($"tasks/{Task.Id}", Task);
+            var response = await _httpClient.PutAsJsonAsync($"tasks/{Task?.Id}", Task);
             if (response.IsSuccessStatusCode)
                 return RedirectToPage("Index");
 

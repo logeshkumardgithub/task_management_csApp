@@ -54,8 +54,16 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Tasks.AddRange(
-        new TaskManagement.API.Models.TaskItem { Title = "Sample Task 1", Description = "Do something" },
-        new TaskManagement.API.Models.TaskItem { Title = "Sample Task 2", Description = "Do something else", IsCompleted = true }
+        new TaskManagement.API.Models.TaskItem { Title = "Task 1", Description = "Task 1 data" },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 2", Description = "Task 2 data", IsCompleted = true },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 3", Description = "Task 3 data", IsCompleted = true },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 4", Description = "Task 4 data", IsCompleted = false },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 5", Description = "Task 5 data", IsCompleted = true },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 6", Description = "Task 6 data", IsCompleted = false },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 7", Description = "Task 7 data", IsCompleted = true },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 8", Description = "Task 8 data", IsCompleted = true },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 9", Description = "Task 9 data", IsCompleted = false },
+        new TaskManagement.API.Models.TaskItem { Title = "Task 10", Description = "Task 10 data", IsCompleted = false }
     );
     db.SaveChanges();
 }

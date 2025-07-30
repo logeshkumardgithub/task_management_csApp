@@ -17,6 +17,8 @@ namespace TaskManagement.API.Models
 
         public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
 
+        [DataType(DataType.Date)]
+        [Display(Name = "Due Date")]
         public DateTime? DueDate { get; set; }
     }
 }
