@@ -1,4 +1,5 @@
 using TaskManagement.API.Data;
+using TaskManagement.API.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using TaskManagement.API.Authentication;
@@ -64,6 +65,13 @@ using (var scope = app.Services.CreateScope())
         new TaskManagement.API.Models.TaskItem { Title = "Task 8", Description = "Task 8 data", IsCompleted = true },
         new TaskManagement.API.Models.TaskItem { Title = "Task 9", Description = "Task 9 data", IsCompleted = false },
         new TaskManagement.API.Models.TaskItem { Title = "Task 10", Description = "Task 10 data", IsCompleted = false }
+    );
+
+    db.Users.AddRange(
+        new AppUser { Username = "admin", Password = "password" },
+        new AppUser { Username = "user1", Password = "user1pass" },
+        new AppUser { Username = "user2", Password = "user2pass" },
+        new AppUser { Username = "user3", Password = "user3pass" }
     );
     db.SaveChanges();
 }

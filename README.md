@@ -85,9 +85,11 @@ TaskManagementApp/
 	```
 	git clone git@github.com:logeshkumardgithub/task_management_csApp.git
 	```
-2. Open the project in **Visual Studio Code** using ```TaskManagementApp.sln``` file from repo
-3. Open terminal and navigate to root directory
-
+2. Open the project folder manually in **Visual Studio Code**   OR
+   Open terminal, navigate to root directory and give below command to open project in **Visual Studio Code** automatically
+	```
+	code .
+	```
 ---
 
 ### 📁 Restore & Build

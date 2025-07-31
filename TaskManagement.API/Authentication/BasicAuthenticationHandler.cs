@@ -4,18 +4,23 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
+using TaskManagement.API.Data;
+using TaskManagement.API.Models;
 
 namespace TaskManagement.API.Authentication;
 
 public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
+    private readonly AppDbContext _dbContext;
     public BasicAuthenticationHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
-        ISystemClock clock)
+        ISystemClock clock,
+        AppDbContext dbContext)
         : base(options, logger, encoder, clock)
     {
+        _dbContext = dbContext;
     }
 
     protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -33,7 +38,8 @@ public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSc
             var username = credentials[0];
             var password = credentials[1];
 
-            if (username != "admin" || password != "password")
+            var user = _dbContext.Users.SingleOrDefault(u => u.Username == username && u.Password == password);
+            if (user == null)
                 return Task.FromResult(AuthenticateResult.Fail("Invalid username or password"));
 
             var claims = new[] {
