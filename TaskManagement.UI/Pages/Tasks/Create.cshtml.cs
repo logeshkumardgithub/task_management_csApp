@@ -1,34 +1,51 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 using TaskManagement.UI.Models;
 
 namespace TaskManagement.UI.Pages.Tasks
 {
     public class CreateModel : PageModel
     {
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _clientFactory;
+
         [BindProperty]
-        public TaskItem? Task { get; set; }
+        public TaskItem Task { get; set; } = new TaskItem();
 
         public CreateModel(IHttpClientFactory clientFactory)
         {
-            _httpClient = clientFactory.CreateClient("TaskApi");
+            _clientFactory = clientFactory;
         }
 
-        public void OnGet() { }
+        public IActionResult OnGet()
+        {
+            if (HttpContext.Session.GetString("Username") == null)
+                return RedirectToPage("/Login");
+
+            return Page();
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
                 return Page();
-            
-            if (Task != null)
-            {
-                Task.CreatedDate = DateTime.Now;
-            }
-            var response = await _httpClient.PostAsJsonAsync("tasks", Task);
+
+            var username = HttpContext.Session.GetString("Username");
+            var password = HttpContext.Session.GetString("Password");
+
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+                return RedirectToPage("/Login");
+
+            var httpClient = _clientFactory.CreateClient();
+            httpClient.BaseAddress = new Uri("http://localhost:5000/api/");
+            var authHeader = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}"));
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", authHeader);
+
+            Task.CreatedDate = DateTime.Now;
+            var response = await httpClient.PostAsJsonAsync("tasks", Task);
+
             if (response.IsSuccessStatusCode)
                 return RedirectToPage("Index");
 
