@@ -20,6 +20,12 @@ namespace TaskManagement.UI.Pages.Tasks
         [BindProperty(SupportsGet = true)]
         public string? FilterStatus { get; set; }
 
+        [BindProperty(SupportsGet = true)]
+        public int PageNumber { get; set; } = 1;
+
+        public int PageSize { get; set; } = 5; // Customize page size as needed
+        public int TotalPages { get; set; }
+
         [BindProperty(SupportsGet = false)]
         public string? ErrorMessage { get; set; }
 
@@ -30,15 +36,11 @@ namespace TaskManagement.UI.Pages.Tasks
 
         public async Task<IActionResult> OnGetAsync()
         {
-            // Retrieve credentials from TempData
             var username = HttpContext.Session.GetString("Username");
             var password = HttpContext.Session.GetString("Password");
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
-                // Redirect to login if not authenticated
                 return RedirectToPage("/Login");
-            }
 
             try
             {
@@ -47,17 +49,38 @@ namespace TaskManagement.UI.Pages.Tasks
                 httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(byteArray));
                 httpClient.BaseAddress = new Uri("http://localhost:5000/api/");
 
-                var title = string.IsNullOrWhiteSpace(SearchTitle) ? "" : $"title={Uri.EscapeDataString(SearchTitle)}";
-                var status = string.IsNullOrWhiteSpace(FilterStatus) ? "" : $"status={Uri.EscapeDataString(FilterStatus)}";
+                var queryParams = new List<string>();
+                if (!string.IsNullOrWhiteSpace(SearchTitle))
+                    queryParams.Add($"title={Uri.EscapeDataString(SearchTitle)}");
 
-                var query = string.Join("&", new[] { title, status }.Where(q => !string.IsNullOrEmpty(q)));
-                var requestUri = string.IsNullOrEmpty(query) ? "tasks" : $"tasks?{query}";
+                if (!string.IsNullOrWhiteSpace(FilterStatus))
+                    queryParams.Add($"status={Uri.EscapeDataString(FilterStatus)}");
 
-                Tasks = await httpClient.GetFromJsonAsync<List<TaskItem>>(requestUri) ?? new List<TaskItem>();
+                queryParams.Add($"pageNumber={PageNumber}");
+                queryParams.Add($"pageSize={PageSize}");
+
+                var query = string.Join("&", queryParams);
+                var requestUri = $"tasks?{query}";
+
+                var response = await httpClient.GetAsync(requestUri);
+                if (response.IsSuccessStatusCode)
+                {
+                    if (response.Headers.TryGetValues("X-Total-Count", out var totalValues))
+                    {
+                        var totalCount = int.Parse(totalValues.First());
+                        TotalPages = (int)Math.Ceiling((double)totalCount / PageSize);
+                    }
+
+                    Tasks = await response.Content.ReadFromJsonAsync<List<TaskItem>>() ?? new List<TaskItem>();
+                }
+                else
+                {
+                    ErrorMessage = "Failed to fetch tasks.";
+                }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to fetch tasks: {ex.Message}");
+                Console.WriteLine($"Error: {ex.Message}");
                 ErrorMessage = "Authentication failed or API unreachable.";
             }
 
@@ -70,9 +93,7 @@ namespace TaskManagement.UI.Pages.Tasks
             var password = HttpContext.Session.GetString("Password");
 
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
-            {
                 return RedirectToPage("/Login");
-            }
 
             try
             {
@@ -83,19 +104,17 @@ namespace TaskManagement.UI.Pages.Tasks
 
                 var response = await httpClient.DeleteAsync($"tasks/{id}");
                 if (response.IsSuccessStatusCode)
-                {
-                    return RedirectToPage(); // Refresh page to reload tasks
-                }
+                    return RedirectToPage(new { PageNumber, SearchTitle, FilterStatus });
 
                 ModelState.AddModelError(string.Empty, "Failed to delete the task.");
-                return Page();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error deleting task: {ex.Message}");
+                Console.WriteLine($"Delete error: {ex.Message}");
                 ModelState.AddModelError(string.Empty, "An error occurred while deleting the task.");
-                return Page();
             }
+
+            return Page();
         }
     }
 }

@@ -19,7 +19,11 @@ namespace TaskManagement.API.Controllers
 
         [HttpGet]
         //public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks() => await _context.Tasks.ToListAsync();
-        public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks([FromQuery] string? title, [FromQuery] string? status)
+        public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks(
+            [FromQuery] string? title,
+            [FromQuery] string? status,
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
             var query = _context.Tasks.AsQueryable();
             if (!string.IsNullOrWhiteSpace(title))
@@ -30,7 +34,15 @@ namespace TaskManagement.API.Controllers
             else if (status == "Pending")
                 query = query.Where(t => !t.IsCompleted);
 
-            return await query.ToListAsync();
+            // Pagination logic
+            var totalCount = await query.CountAsync();
+            var tasks = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            Response.Headers.Add("X-Total-Count", totalCount.ToString());
+            return tasks;
         }
 
         [HttpGet("{id}")]
