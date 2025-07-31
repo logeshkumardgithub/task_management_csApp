@@ -21,10 +21,17 @@ namespace TaskManagement.UI.Pages.Tasks
         public string? FilterStatus { get; set; }
 
         [BindProperty(SupportsGet = true)]
+        public string? SortBy { get; set; }
+
+        [BindProperty(SupportsGet = true)]
+        public bool SortAsc { get; set; } = true;
+
+        [BindProperty(SupportsGet = true)]
         public int PageNumber { get; set; } = 1;
 
-        public int PageSize { get; set; } = 5; // Customize page size as needed
         public int TotalPages { get; set; }
+
+        public int PageSize { get; set; } = 5; // You can change this default value
 
         [BindProperty(SupportsGet = false)]
         public string? ErrorMessage { get; set; }
@@ -56,6 +63,10 @@ namespace TaskManagement.UI.Pages.Tasks
                 if (!string.IsNullOrWhiteSpace(FilterStatus))
                     queryParams.Add($"status={Uri.EscapeDataString(FilterStatus)}");
 
+                if (!string.IsNullOrWhiteSpace(SortBy))
+                    queryParams.Add($"sortBy={SortBy}");
+
+                queryParams.Add($"sortAsc={SortAsc}");
                 queryParams.Add($"pageNumber={PageNumber}");
                 queryParams.Add($"pageSize={PageSize}");
 
@@ -63,25 +74,33 @@ namespace TaskManagement.UI.Pages.Tasks
                 var requestUri = $"tasks?{query}";
 
                 var response = await httpClient.GetAsync(requestUri);
+
                 if (response.IsSuccessStatusCode)
                 {
-                    if (response.Headers.TryGetValues("X-Total-Count", out var totalValues))
+                    if (response.Headers.Contains("X-Total-Count"))
                     {
-                        var totalCount = int.Parse(totalValues.First());
-                        TotalPages = (int)Math.Ceiling((double)totalCount / PageSize);
+                        var totalCountHeader = response.Headers.GetValues("X-Total-Count").FirstOrDefault();
+                        if (int.TryParse(totalCountHeader, out int totalCount))
+                        {
+                            TotalPages = (int)Math.Ceiling(totalCount / (double)PageSize);
+                        }
                     }
 
                     Tasks = await response.Content.ReadFromJsonAsync<List<TaskItem>>() ?? new List<TaskItem>();
                 }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    ErrorMessage = "Authentication failed.";
+                }
                 else
                 {
-                    ErrorMessage = "Failed to fetch tasks.";
+                    ErrorMessage = $"Error fetching tasks: {response.ReasonPhrase}";
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
-                ErrorMessage = "Authentication failed or API unreachable.";
+                Console.WriteLine($"Failed to fetch tasks: {ex.Message}");
+                ErrorMessage = "Failed to connect to API.";
             }
 
             return Page();
@@ -103,18 +122,19 @@ namespace TaskManagement.UI.Pages.Tasks
                 httpClient.BaseAddress = new Uri("http://localhost:5000/api/");
 
                 var response = await httpClient.DeleteAsync($"tasks/{id}");
+
                 if (response.IsSuccessStatusCode)
-                    return RedirectToPage(new { PageNumber, SearchTitle, FilterStatus });
+                    return RedirectToPage();
 
                 ModelState.AddModelError(string.Empty, "Failed to delete the task.");
+                return Page();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Delete error: {ex.Message}");
+                Console.WriteLine($"Error deleting task: {ex.Message}");
                 ModelState.AddModelError(string.Empty, "An error occurred while deleting the task.");
+                return Page();
             }
-
-            return Page();
         }
     }
 }

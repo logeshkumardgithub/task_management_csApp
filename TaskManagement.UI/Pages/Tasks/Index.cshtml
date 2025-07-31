@@ -28,9 +28,35 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Title</th>
+                <th>
+                    <a asp-page="./Index"
+                       asp-route-SearchTitle="@Model.SearchTitle"
+                       asp-route-FilterStatus="@Model.FilterStatus"
+                       asp-route-PageNumber="@Model.PageNumber"
+                       asp-route-SortBy="title"
+                       asp-route-SortAsc="@(Model.SortBy == "title" ? !Model.SortAsc : true)">
+                        Title
+                        @if (Model.SortBy == "title")
+                        {
+                            <span>@(Model.SortAsc ? "▲" : "▼")</span>
+                        }
+                    </a>
+                </th>
                 <th>Description</th>
-                <th>Status</th>
+                <th>
+                    <a asp-page="./Index"
+                       asp-route-SearchTitle="@Model.SearchTitle"
+                       asp-route-FilterStatus="@Model.FilterStatus"
+                       asp-route-PageNumber="@Model.PageNumber"
+                       asp-route-SortBy="status"
+                       asp-route-SortAsc="@(Model.SortBy == "status" ? !Model.SortAsc : true)">
+                        Status
+                        @if (Model.SortBy == "status")
+                        {
+                            <span>@(Model.SortAsc ? "▲" : "▼")</span>
+                        }
+                    </a>
+                </th>
                 <th>Due Date</th>
                 <th>Actions</th>
             </tr>
@@ -58,27 +84,33 @@
     <!-- Pagination Controls -->
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center">
-            <form method="get">
-                <input type="hidden" name="SearchTitle" value="@Model.SearchTitle" />
-                <input type="hidden" name="FilterStatus" value="@Model.FilterStatus" />
-                <input type="hidden" name="PageNumber" value="@(Model.PageNumber - 1)" />
-                <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
-                    <button class="page-link" type="submit">Previous</button>
-                </li>
-            </form>
+            <li class="page-item @(Model.PageNumber == 1 ? "disabled" : "")">
+                <a class="page-link"
+                   asp-page="./Index"
+                   asp-route-SearchTitle="@Model.SearchTitle"
+                   asp-route-FilterStatus="@Model.FilterStatus"
+                   asp-route-SortBy="@Model.SortBy"
+                   asp-route-SortAsc="@Model.SortAsc"
+                   asp-route-PageNumber="@(Model.PageNumber - 1)">
+                    Previous
+                </a>
+            </li>
 
             <li class="page-item disabled">
                 <span class="page-link">Page @Model.PageNumber of @Model.TotalPages</span>
             </li>
 
-            <form method="get">
-                <input type="hidden" name="SearchTitle" value="@Model.SearchTitle" />
-                <input type="hidden" name="FilterStatus" value="@Model.FilterStatus" />
-                <input type="hidden" name="PageNumber" value="@(Model.PageNumber + 1)" />
-                <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
-                    <button class="page-link" type="submit">Next</button>
-                </li>
-            </form>
+            <li class="page-item @(Model.PageNumber == Model.TotalPages ? "disabled" : "")">
+                <a class="page-link"
+                   asp-page="./Index"
+                   asp-route-SearchTitle="@Model.SearchTitle"
+                   asp-route-FilterStatus="@Model.FilterStatus"
+                   asp-route-SortBy="@Model.SortBy"
+                   asp-route-SortAsc="@Model.SortAsc"
+                   asp-route-PageNumber="@(Model.PageNumber + 1)">
+                    Next
+                </a>
+            </li>
         </ul>
     </nav>
 }

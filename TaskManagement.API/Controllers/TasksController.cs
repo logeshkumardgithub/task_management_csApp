@@ -22,6 +22,8 @@ namespace TaskManagement.API.Controllers
         public async Task<ActionResult<IEnumerable<TaskItem>>> GetTasks(
             [FromQuery] string? title,
             [FromQuery] string? status,
+            [FromQuery] string? sortBy,
+            [FromQuery] bool sortAsc = true,
             [FromQuery] int pageNumber = 1,
             [FromQuery] int pageSize = 10)
         {
@@ -33,6 +35,19 @@ namespace TaskManagement.API.Controllers
                 query = query.Where(t => t.IsCompleted);
             else if (status == "Pending")
                 query = query.Where(t => !t.IsCompleted);
+
+            if (!string.IsNullOrWhiteSpace(sortBy))
+            {
+                switch (sortBy.ToLower())
+                {
+                    case "title":
+                        query = sortAsc ? query.OrderBy(t => t.Title) : query.OrderByDescending(t => t.Title);
+                        break;
+                    case "status":
+                        query = sortAsc ? query.OrderBy(t => t.IsCompleted) : query.OrderByDescending(t => t.IsCompleted);
+                        break;
+                }
+            }
 
             // Pagination logic
             var totalCount = await query.CountAsync();
